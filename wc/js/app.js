@@ -1,8 +1,8 @@
 function parseRoute() {
-  if (window.location.pathname.match(/page_1$/)) {
+  if (window.location.pathname.match(/page_1/)) {
     loadPartial('page_1');
   }
-  else if (window.location.pathname.match(/page_2$/)) {
+  else if (window.location.pathname.match(/page_2/)) {
     loadPartial('page_2');
   }
   else {
