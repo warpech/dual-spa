@@ -1,8 +1,8 @@
 function parseRoute() {
-  if (window.location.pathname.match(/page_1/)) {
+  if (window.location.pathname.match(/\/page_1\/?$/)) { //trailing slash is optional
     loadPartial('page_1');
   }
-  else if (window.location.pathname.match(/page_2/)) {
+  else if (window.location.pathname.match(/\/page_2\/?$/)) { //trailing slash is optional
     loadPartial('page_2');
   }
   else {
