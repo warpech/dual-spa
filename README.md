@@ -2,15 +2,16 @@
 
 ### Features
 
-This demo shows a proof of concept of a web application that:
-
-- loads partial content while changing the URL using HTML5 History API
-- (not finished) ~~binds partial content to JSON data source~~
-- (not finished) ~~uses compound component `<btn-group>` that consists of `<btn>` elements~~
+This proof of concept shows a web application that:
+- implements HTML5 History API
+- loads partial content (HTML) when clicked on link, without reloading whole document
+- retains current state (loads the full page) when page is reloaded
+- (not finished) ~~bind partials to data using JSON-Patch~~
+- (not finished) ~~compound components/directives that don't have to be declared in main page (e.g. `<btn-group>` that consists of `<btn>` elements)~~
 
 ### Versions
 
-The POC is implemented in two versions:
+It implemented in two versions:
 
 - AngularJS
 - W3C Web Components
