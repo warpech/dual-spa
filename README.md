@@ -1,4 +1,4 @@
-# Dual SPA (single page application) proof of concept
+## Dual SPA (single page application) proof of concept
 
 This demo shows a proof of concept of a web application that:
 
