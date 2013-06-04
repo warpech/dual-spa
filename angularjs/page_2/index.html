@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" ng-app="Site">
+<head>
+  <meta charset="utf-8">
+  <title>AngularJS version of the Dual SPA POC</title>
+  <script src="/dual-spa/angularjs/js/angular.min.js"></script>
+  <script src="/dual-spa/angularjs/js/app.js"></script>
+  <base href="/dual-spa/angularjs/">
+</head>
+<body ng-controller="AppController">
+
+<ul>
+  <li><a href="./page_1">Page 1</a></li>
+  <li><a href="./page_2">Page 2</a></li>
+</ul>
+
+<div ng-view></div>
+
+<hr>
+
+<p>The main file is <code>{{mainFile}}</code>. Changing the menu link will load the partial page and change URL using HTML5 History API.</p>
+
+</body>
+</html>
