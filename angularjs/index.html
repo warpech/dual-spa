@@ -3,8 +3,10 @@
 <head>
   <meta charset="utf-8">
   <title>AngularJS version of the Dual SPA POC</title>
+
   <base href="/dual-spa/angularjs/">
   <script src="js/angular.min.js"></script>
+  <script src="js/angular.animateMe.js"></script>
   <script src="js/app.js"></script>
 
   <link rel="stylesheet" type="text/css" href="css/style.css">
@@ -16,11 +18,12 @@
   <li><a href="./page_2">Page 2</a></li>
 </ul>
 
-<div ng-view></div>
+<div animate-me ng-view></div>
 
 <hr>
 
-<p><small>The main document was loaded as <code>{{mainFile}}</code>.</small></p>
-
+<p>
+  <small>The main document was loaded as <code>{{mainFile}}</code>.</small>
+</p>
 </body>
 </html>

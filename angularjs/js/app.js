@@ -1,9 +1,8 @@
-var Site = angular.module('Site', []);
+var Site = angular.module('Site', ['animateMeModule']);
 
-function AppController ($scope) {
-  $scope.mainFile = window.location.pathname;
-}
-
+/**
+ * Site.config
+ */
 Site.config(function ($routeProvider, $locationProvider) {
   $locationProvider.html5Mode(true).hashPrefix('!');
 
@@ -12,3 +11,10 @@ Site.config(function ($routeProvider, $locationProvider) {
     .when('/page_2', {templateUrl: 'partials/page_2.html'})
     .otherwise({redirectTo: '/page_1'});
 });
+
+/**
+ * AppController
+ */
+function AppController ($scope) {
+  $scope.mainFile = window.location.pathname;
+}
