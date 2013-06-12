@@ -1,0 +1,28 @@
+<element name="x-viewmodel-page" attributes="model view">
+  <template>[This will be replaced by view. View can contain MDV that will be bound to model]</template>
+  <script>
+    Polymer.bindHTML = function (html, element) {
+      var template = document.createElement('template');
+      template.innerHTML = html;
+      return template.createInstance(element, 'Polymer');
+    }
+
+    Polymer.unbindNode = function (node) {
+      node.unbindAll();
+      for (var child = node.firstChild; child; child = child.nextSibling) {
+        Polymer.unbindNode(child);
+      }
+    }
+
+    Polymer.register(this, {
+      viewChanged: function () {
+        Polymer.unbindNode(this.webkitShadowRoot);
+        this.webkitShadowRoot.textContent = '';
+        this.webkitShadowRoot.appendChild(Polymer.bindHTML(this.view, this));
+      },
+      ready: function () {
+
+      }
+    });
+  </script>
+</element>

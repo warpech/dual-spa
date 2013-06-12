@@ -1,0 +1,81 @@
+<link rel="import" href="animate-me.html">
+<link rel="import" href="x-btn-group.html">
+<link rel="import" href="x-viewmodel-page.html">
+
+<element name="x-viewmodel">
+  <template>
+    <ul>
+      <li><a href="../page_1">Page 1</a></li>
+      <li><a href="../page_2">Page 2</a></li>
+    </ul>
+
+    <div id="output"></div>
+    <p>
+      <button id="simulate">Request changes</button>
+    </p>
+
+    <div is="animate-me">
+      <x-viewmodel-page model="{{ viewmodel.subpage }}" view="{{ viewmodel.subpage.html }}"></x-viewmodel-page>
+    </div>
+
+    <hr>
+
+    <p>
+      <small>The main document was loaded as <code>{{pathname}}</code>.</small>
+    </p>
+  </template>
+
+  <script>
+    Polymer.register(this, {
+      ready: function () {
+        this.pathname = window.location.pathname;
+
+        this.viewmodel = {
+          username: "Marcin",
+          subpage: {
+            html: "Loading Ajax..."
+          }
+        }
+
+        parseRoute();
+
+        var that = this;
+        this.$.simulate.addEventListener('click', function () {
+          that.viewmodel.subpage.increment++;
+        });
+
+        this.webkitShadowRoot.addEventListener("click", function (event) {
+          if (event.target.nodeName === 'A') {
+            event.preventDefault();
+            history.pushState(null, null, event.target.href);
+            parseRoute();
+            event.preventDefault();
+
+
+          }
+        }, false);
+
+        function parseRoute() {
+          if (window.location.pathname.match(/\/page_1\/?$/)) { //trailing slash is optional
+            loadPartial('page_1');
+          }
+          else if (window.location.pathname.match(/\/page_2\/?$/)) { //trailing slash is optional
+            loadPartial('page_2');
+          }
+          else {
+            loadPartial('page_1');
+          }
+        }
+
+        function loadPartial(name) {
+          var oReq = new XMLHttpRequest();
+          oReq.onload = function () {
+            that.viewmodel.subpage.html = this.responseText;
+          };
+          oReq.open("GET", 'partials/' + name + '.html', true);
+          oReq.send();
+        }
+      }
+    });
+  </script>
+</element>
