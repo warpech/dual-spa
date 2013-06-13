@@ -2700,21 +2700,32 @@ Handsontable.TableView = function (instance) {
     }
   });
 
+  var innerMouseDown = false;
+
+  instance.rootElement.on('mousedown.' + instance.guid, function (event) {
+    innerMouseDown = true; //needs to be on root element because Web Component only reports the outmost custom element, when event us observed at document.documentElement
+  });
+
   $documentElement.on('mousedown.' + instance.guid, function (event) {
     var next = event.target;
 
-    if (next !== that.wt.wtTable.spreader) { //immediate click on "spreader" means click on the right side of vertical scrollbar
+    if(innerMouseDown) {
+      innerMouseDown = false;
+      return;
+    }
+
+    //if (next !== that.wt.wtTable.spreader) { //immediate click on "spreader" means click on the right side of vertical scrollbar
       while (next !== document.documentElement) {
         //X-HANDSONTABLE is the tag name in Web Components version of HOT. Removal of this breaks cell selection
         if(next === null) {
           return; //click on something that was a row but now is detached (possibly because your click triggered a rerender)
         }
-        if (next === instance.rootElement[0] || next.nodeName === 'X-HANDSONTABLE' || next.id === 'context-menu-layer' || $(next).is('.context-menu-list') || $(next).is('.typeahead li')) {
+        if (/*next === instance.rootElement[0] || next.nodeName === 'X-HANDSONTABLE' || */next.id === 'context-menu-layer' || $(next).is('.context-menu-list') || $(next).is('.typeahead li')) {
           return; //click inside container
         }
         next = next.parentNode;
       }
-    }
+    //}
 
     if (that.settings.outsideClickDeselects) {
       instance.deselectCell();
