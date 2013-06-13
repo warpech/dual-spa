@@ -1,6 +1,7 @@
 <link rel="import" href="animate-me.html">
 <link rel="import" href="x-btn-group.html">
 <link rel="import" href="x-viewmodel-page.html">
+<script src="x-viewmodel/json-patch-duplex.js"></script>
 
 <element name="x-viewmodel">
   <template>
@@ -26,16 +27,17 @@
   </template>
 
   <script>
+    var viewmodel = {
+      username: "Marcin",
+      subpage: {
+        html: "Loading Ajax..."
+      }
+    }
+
     Polymer.register(this, {
+      viewmodel: viewmodel,
       ready: function () {
         this.pathname = window.location.pathname;
-
-        this.viewmodel = {
-          username: "Marcin",
-          subpage: {
-            html: "Loading Ajax..."
-          }
-        }
 
         parseRoute();
 
@@ -77,5 +79,32 @@
         }
       }
     });
+
+    //simulate server data patch
+
+    var current = 0;
+    var patches = [
+      {op: "replace", path: "/username", value: "Fred" },
+      {op: "replace", path: "/username", value: "Wilma" },
+      {op: "replace", path: "/username", value: "Pebbles" },
+      {op: "replace", path: "/username", value: "Dino" },
+      {op: "replace", path: "/username", value: "Barney" },
+      {op: "replace", path: "/username", value: "Betty" },
+      {op: "replace", path: "/username", value: "Bamm-Bamm" }
+    ];
+
+    function changeUsername() {
+      jsonpatch.apply(viewmodel, [patches[current]]);
+    }
+
+    setInterval(function () {
+      current++;
+      if (current === patches.length) {
+        current = 0;
+      }
+      changeUsername()
+    }, 2000);
+
+    changeUsername()
   </script>
 </element>
