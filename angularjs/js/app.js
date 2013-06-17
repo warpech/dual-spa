@@ -1,4 +1,4 @@
-var Site = angular.module('Site', ['animateMeModule']);
+var Site = angular.module('Site', ['animateMeModule', 'xBtnModule']);
 
 /**
  * Site.config
