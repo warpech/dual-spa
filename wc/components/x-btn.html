@@ -1,7 +1,7 @@
 <element name="x-btn" attributes="label value skin">
   <template>
     <style>
-      .tile {
+      .btn {
         background: #0F9D23;
         width: 65px;
         padding: 9px 0;
@@ -10,29 +10,29 @@
         float: left;
       }
 
-      .tile .small {
+      .btn .small {
         font-size: 11px;
         text-align: center;
       }
 
-      .tile .big {
+      .btn .big {
         font-size: 22px;
         text-align: center;
       }
 
-      .tile.pink {
+      .btn.pink {
         background: hotpink;
       }
 
-      .tile.blue {
+      .btn.blue {
         background: cornflowerblue;
       }
 
-      .tile.gray {
+      .btn.gray {
         background: #222;
       }
     </style>
-    <div class="tile {{ skin }}">
+    <div class="btn {{ skin }}">
       <div class="small">{{ label }}</div>
       <div class="big">{{ value }}</div>
     </div>
