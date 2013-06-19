@@ -35,17 +35,7 @@ function AppController($scope, $rootScope) {
       {id: 11, name: {first: 'Aaron', last: 'Kinley'}, gender: 'Female', age: 33, languages: {english: 'Yes', spanish: 'Yes', french: 'Yes'}, salary: 2799}
     ],
     settings: {
-      isEmptyRow: function (r) {
-        var val;
-        //c === 1 to ignore id column
-        for (var c = 1, clen = this.countCols(); c < clen; c++) {
-          val = this.getDataAtCell(r, c);
-          if (val !== '' && val !== null && typeof val !== 'undefined') {
-            return false;
-          }
-        }
-        return true;
-      }
+
     },
     html: "Loading Ajax..."
   }
