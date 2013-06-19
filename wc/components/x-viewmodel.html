@@ -13,11 +13,6 @@
       <li><a href="../page_2">Page 2</a></li>
     </ul>
 
-    <div id="output"></div>
-    <p>
-      <button id="simulate">Request changes</button>
-    </p>
-
     <div is="animate-me">
       <x-viewmodel-page model="{{ viewmodel }}" view="{{ viewmodel.subpage.html }}"></x-viewmodel-page>
     </div>
@@ -70,19 +65,12 @@
 
         parseRoute();
 
-        var that = this;
-        this.$.simulate.addEventListener('click', function () {
-          that.viewmodel.subpage.increment++;
-        });
-
         this.webkitShadowRoot.addEventListener("click", function (event) {
           if (event.target.nodeName === 'A') {
             event.preventDefault();
             history.pushState(null, null, event.target.href);
             parseRoute();
             event.preventDefault();
-
-
           }
         }, false);
 
@@ -98,6 +86,7 @@
           }
         }
 
+        var that = this;
         function loadPartial(name) {
           var oReq = new XMLHttpRequest();
           oReq.onload = function () {
