@@ -5,13 +5,9 @@
  */
 function SPA(remoteUrl, callback) {
   var oReq = new XMLHttpRequest();
-  oReq.onload = function () {
-    //this.responseText;
-    callback({});
-  };
-  oReq.onerror = function () {
-    throw new Error("Cannot connect to remoteUrl: " + remoteUrl);
-  };
+  oReq.addEventListener('load', function (event) {
+    callback(JSON.parse(event.target.responseText));
+  }, false);
   oReq.open("GET", remoteUrl, true);
   oReq.send();
 }
