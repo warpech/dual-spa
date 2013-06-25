@@ -10,8 +10,7 @@ function SPA(remoteUrl, callback) {
     callback({});
   };
   oReq.onerror = function () {
-    //this.responseText;
-    callback({});
+    throw new Error("Cannot connect to remoteUrl: " + remoteUrl);
   };
   oReq.open("GET", remoteUrl, true);
   oReq.send();
