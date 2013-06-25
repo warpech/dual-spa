@@ -1,4 +1,4 @@
-describe("Link", function () {
+describe("Links", function () {
   beforeEach(function () {
     this.server = sinon.fakeServer.create();
 
