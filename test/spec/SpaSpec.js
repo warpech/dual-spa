@@ -10,19 +10,19 @@ describe("SPA", function () {
   /// init
   describe("init", function () {
     it("should call callback with an object as single parameter", function () {
-      var callb = jasmine.createSpy();
+      var initSpy = jasmine.createSpy();
 
-      SPA(window.location.href, callb);
+      SPA(window.location.href, initSpy);
 
       this.server.respondWith('{"hello": "world"}');
       this.server.respond();
 
       waitsFor(function () {
-        return callb.wasCalled;
+        return initSpy.wasCalled;
       }, 10);
 
       runs(function () {
-        expect(callb).toHaveBeenCalledWith(jasmine.any(Object));
+        expect(initSpy).toHaveBeenCalledWith(jasmine.any(Object));
       });
     });
   });
@@ -30,19 +30,19 @@ describe("SPA", function () {
   /// ajax
   describe("ajax", function () {
     it("should make a XHR request on init", function () {
-      var callb = jasmine.createSpy();
+      var initSpy = jasmine.createSpy();
 
-      SPA('/test', callb);
+      SPA('/test', initSpy);
 
       this.server.respondWith('{"hello": "world"}');
       this.server.respond();
 
       waitsFor(function () {
-        return callb.wasCalled;
+        return initSpy.wasCalled;
       }, 10);
 
       runs(function () {
-        expect(callb).toHaveBeenCalledWith({"hello": "world"});
+        expect(initSpy).toHaveBeenCalledWith({"hello": "world"});
       });
     });
   });
