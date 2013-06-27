@@ -3,8 +3,11 @@
 <link rel="import" href="x-viewmodel-page.html">
 <link rel="import" href="x-handsontable.html">
 
-<script src="x-viewmodel/json-patch-duplex.js"></script>
-<script src="x-viewmodel/mockServer.js"></script>
+<script src="../../src/spa.js"></script>
+<script src="../../src/json-patch-duplex.js"></script>
+
+<script type="text/javascript" src="../../test/lib/sinon-1.7.1.js"></script>
+<script type="text/javascript" src="x-viewmodel/mockServer.js"></script>
 
 <element name="x-viewmodel">
   <template>
@@ -25,71 +28,18 @@
   </template>
 
   <script>
-    var viewmodel = {
-      username: "Marcin",
-      subpage: {
-        people: [
-          {id: 1, name: {first: 'Joe', last: 'Fabiano'}, gender: 'Male', age: 21, languages: {english: 'Yes', spanish: 'Yes', french: 'No'}, salary: 2000},
-          {id: 2, name: {first: 'Fred', last: 'Wecler'}, gender: 'Male', age: 25, languages: {english: 'Yes', spanish: 'No', french: 'No'}, salary: 2500},
-          {id: 3, name: {first: 'Steve', last: 'Wilson'}, gender: 'Male', age: 32, languages: {english: 'Yes', spanish: 'No', french: 'No'}, salary: 1700},
-          {id: 4, name: {first: 'Maria', last: 'Fernandez'}, gender: 'Female', age: 27, languages: {english: 'No', spanish: 'Yes', french: 'Yes'}, salary: 3000},
-          {id: 5, name: {first: 'Pierre', last: 'Barbault'}, gender: 'Male', age: 46, languages: {english: 'Yes', spanish: 'No', french: 'Yes'}, salary: 1450},
-          {id: 6, name: {first: 'Nancy', last: 'Moore'}, gender: 'Female', age: 34, languages: {english: 'Yes', spanish: 'No', french: 'No'}, salary: 2300},
-          {id: 7, name: {first: 'Barbara', last: 'MacDonald'}, gender: 'Female', age: 19, languages: {english: 'Yes', spanish: 'No', french: 'No'}, salary: 1900},
-          {id: 8, name: {first: 'Wilma', last: 'Williams'}, gender: 'Female', age: 33, languages: {english: 'Yes', spanish: 'Yes', french: 'Yes'}, salary: 2400},
-          {id: 9, name: {first: 'Sasha', last: 'Silver'}, gender: 'Male', age: 27, languages: {english: 'Yes', spanish: 'No', french: 'Yes'}, salary: 2110},
-          {id: 10, name: {first: 'Don', last: 'Pérignon'}, gender: 'Male', age: 42, languages: {english: 'No', spanish: 'No', french: 'Yes'}, salary: 2090},
-          {id: 11, name: {first: 'Aaron', last: 'Kinley'}, gender: 'Female', age: 33, languages: {english: 'Yes', spanish: 'Yes', french: 'Yes'}, salary: 2799}
-        ],
-        settings: {
-
-        },
-        html: "Loading Ajax..."
-      }
-    }
-
     Polymer.register(this, {
-      viewmodel: viewmodel,
+      viewmodel: {},
       ready: function () {
         this.pathname = window.location.pathname;
 
-        parseRoute();
-
-        this.webkitShadowRoot.addEventListener("click", function (event) {
-          if (event.target.nodeName === 'A') {
-            event.preventDefault();
-            history.pushState(null, null, event.target.href);
-            parseRoute();
-            event.preventDefault();
-          }
-        }, false);
-
-        function parseRoute() {
-          if (window.location.pathname.match(/\/page_1\/?$/)) { //trailing slash is optional
-            loadPartial('page_1');
-          }
-          else if (window.location.pathname.match(/\/page_2\/?$/)) { //trailing slash is optional
-            loadPartial('page_2');
-          }
-          else {
-            loadPartial('page_1');
-          }
-        }
-
         var that = this;
-        function loadPartial(name) {
-          var oReq = new XMLHttpRequest();
-          oReq.onload = function () {
-            that.viewmodel.subpage.html = this.responseText;
-          };
-          oReq.open("GET", 'partials/' + name + '.html', true);
-          oReq.send();
-        }
+        SPA.init(window.location.href, function (obj) {
+          that.viewmodel = obj;
+        });
+
+        SPA.catchExternaLink(this.webkitShadowRoot);
       }
     });
-
-    //simulate server data patch
-
-    mockServer(viewmodel);
   </script>
 </element>
