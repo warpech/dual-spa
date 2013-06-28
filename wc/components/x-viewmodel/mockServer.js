@@ -57,6 +57,7 @@ server.xhr.addFilter(function (method, url) {
   if (url.indexOf('partial') > -1) {
     return true;
   }
+  return false;
 });
 
 var lastUrl = window.location.href;
@@ -70,35 +71,18 @@ else if (lastUrl.indexOf('page_2') > -1) {
 
 server.respondWith(function (xhr) {
   var patches = changeUsername();
-  var partial;
   if (xhr.requestHeaders['Content-Type'] == 'application/json-patch') {
     if (xhr.url !== lastUrl) {
       lastUrl = xhr.url;
       if (lastUrl.indexOf('page_1') > -1) {
         patches.push({op: 'replace', path: '/subpage/html', value: '@partials/page_1.html'});
-//        patches.push({op: 'replace', path: '/subpage/html', value: '<h1>This is Page 1 for {{ model.username }}</h1>'});
-//        partial = 'partials/page_1.html';
       }
       else if (lastUrl.indexOf('page_2') > -1) {
         patches.push({op: 'replace', path: '/subpage/html', value: '@partials/page_2.html'});
-//        patches.push({op: 'replace', path: '/subpage/html', value: '<h1>This is Page 2 for {{ model.username }}</h1>'});
-//        partial = 'partials/page_2.html';
       }
     }
 
-    if (partial) {
-      /*var oReq = new XMLHttpRequest();
-       var that = this;
-       oReq.onload = function (event) {
-       patches.push({op: 'replace', path: '/subpage/html', value: event.target.responseText});
-       xhr.respond(200, 'application/json-patch', JSON.stringify(patches));
-       };
-       oReq.open("GET", partial, true);
-       oReq.send();*/
-    }
-    else {
-      xhr.respond(200, 'application/json-patch', JSON.stringify(patches));
-    }
+    xhr.respond(200, 'application/json-patch', JSON.stringify(patches));
   }
   else {
     xhr.respond(200, 'application/json', JSON.stringify(full));
@@ -107,10 +91,11 @@ server.respondWith(function (xhr) {
 
 server.respond();
 
-/*setInterval(function () {
- current++;
- if (current === names.length) {
- current = 0;
- }
- changeUsername()
- }, 2000);*/
+/// simulate server push (here: query server every 2 s
+setInterval(function () {
+  var a = document.createElement('A');
+  a.href = window.location.href;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}, 2000);
