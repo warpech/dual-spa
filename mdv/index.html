@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MDV version of the Dual SPA POC</title>
+
+  <base href="/dual-spa/mdv/">
+  <script src="js/mdv/mdv.js"></script>
+  <script src="../src/json-patch-duplex.js"></script>
+  <script src="../src/spa.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+
+  <script src="../test/lib/sinon-1.7.1.js"></script>
+  <script src="../src/mockServer.js"></script>
+</head>
+<body>
+
+<template id="mainTpl" bind>
+  <h1>This is Page 1 for "{{ username }}"</h1>
+
+  <p>It is the main page. It has some text</p>
+
+  <p>Changing the menu link will load the partial page and change URL using HTML5 History API.</p>
+
+  <p>Source of this demo is available on <a href="https://github.com/warpech/dual-spa/">GitHub</a></p>
+
+  <p>Type here to refresh data:<input value="{{ typehere }}"></p>
+</template>
+
+<script>
+  SPA.init(window.location.href, function (obj) {
+    document.getElementById('mainTpl').model = obj;
+  });
+</script>
+</body>
+</html>
