@@ -51,6 +51,7 @@ function changeUsername() {
 
 var server = sinon.fakeServer.create();
 server.autoRespond = true;
+server.autoRespondAfter = 100;
 
 server.xhr.useFilters = true;
 server.xhr.addFilter(function (method, url) {
@@ -71,7 +72,7 @@ else if (lastUrl.indexOf('page_2') > -1) {
 
 server.respondWith(function (xhr) {
   var patches = changeUsername();
-  if (xhr.requestHeaders['Content-Type'] == 'application/json-patch') {
+  if (xhr.requestHeaders['Accept'] == 'application/json-patch+json') {
     if (xhr.url !== lastUrl) {
       lastUrl = xhr.url;
       if (lastUrl.indexOf('page_1') > -1) {
@@ -89,13 +90,11 @@ server.respondWith(function (xhr) {
   }
 });
 
-server.respond();
-
 /// simulate server push (here: query server every 2 s
-setInterval(function () {
+/*setInterval(function () {
   var a = document.createElement('A');
   a.href = window.location.href;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-}, 2000);
+}, 2000);*/

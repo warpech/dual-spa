@@ -8,15 +8,31 @@
    * @param callback
    */
   function SPA(remoteUrl, callback) {
-    var oReq = new XMLHttpRequest();
-    oReq.addEventListener('load', function (event) {
+    xhr(remoteUrl, 'application/json', null, function (event) {
       obj = JSON.parse(event.target.responseText);
+      createObserver(remoteUrl, obj);
       callback(obj);
-    }, false);
-    oReq.open("GET", remoteUrl, true);
-    oReq.send();
+    });
 
     document.body.addEventListener('click', clickHandler);
+  }
+
+  var lastObserver;
+
+  function createObserver(href, obj) {
+    lastObserver = jsonpatch.observe(obj, function (patches) {
+      var applyChanges = function (event) {
+        var patches = JSON.parse(event.target.responseText);
+        if (lastObserver) {
+          jsonpatch.unobserve(obj, lastObserver);
+          lastObserver = null;
+        }
+        jsonpatch.apply(obj, patches);
+        createObserver(href, obj);
+      };
+
+      xhr(href, 'application/json-patch+json', JSON.stringify(patches), applyChanges);
+    });
   }
 
   function isApplicationLink(href) {
@@ -32,20 +48,21 @@
     if (target.href && isApplicationLink(target)) {
       event.preventDefault();
       history.pushState(null, null, target.href);
-      parseRoute(target.href);
+      xhr(target.href, 'application/json-patch+json', null, function (event) {
+        var patches = JSON.parse(event.target.responseText);
+        jsonpatch.apply(obj, patches);
+      });
     }
   }
 
-  function parseRoute(href) {
+  function xhr(url, accept, data, callback) {
     var oReq = new XMLHttpRequest();
-    oReq.addEventListener('load', function (event) {
-      var patches = JSON.parse(event.target.responseText);
-      jsonpatch.apply(obj, patches);
-    }, false);
-    oReq.open("GET", href, true);
-    //oReq.setRequestHeader('Accept-Encoding', 'application/json-patch'); //cannot do this in Chrome - http://news.anarchy46.net/2012/06/refused-to-set-unsafe-header.html
-    oReq.setRequestHeader('Content-Type', 'application/json-patch'); //cannot do this in Chrome - http://news.anarchy46.net/2012/06/refused-to-set-unsafe-header.html
-    oReq.send();
+    oReq.addEventListener('load', callback, false);
+    oReq.open("GET", url, true);
+    if (accept) {
+      oReq.setRequestHeader('Accept', accept);
+    }
+    oReq.send(data);
   }
 
   global.SPA = {
