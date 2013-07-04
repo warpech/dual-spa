@@ -1,5 +1,7 @@
 (function (global) {
 
+  var lastClickHandler;
+
   /**
    * Defines a connection to a remove URL, returns callback to a object that is persistent between browser and server
    * @param remoteUrl
@@ -17,7 +19,10 @@
     this.obj = JSON.parse(event.target.responseText);
     this.observe();
     this.callback(this.obj);
-    document.body.addEventListener('click', this.clickHandler.bind(this));
+    if (lastClickHandler) {
+      document.body.removeEventListener('click', lastClickHandler);
+    }
+    document.body.addEventListener('click', lastClickHandler = this.clickHandler.bind(this));
   };
 
   SPA.prototype.observe = function () {

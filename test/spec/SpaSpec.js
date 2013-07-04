@@ -12,7 +12,7 @@ describe("SPA", function () {
     it("should call callback with an object as single parameter", function () {
       var initSpy = jasmine.createSpy();
 
-      SPA(window.location.href, initSpy);
+      new SPA(window.location.href, initSpy);
 
       this.server.respondWith('{"hello": "world"}');
       this.server.respond();
@@ -32,7 +32,7 @@ describe("SPA", function () {
     it("should make a XHR request on init", function () {
       var initSpy = jasmine.createSpy();
 
-      SPA('/test', initSpy);
+      new SPA('/test', initSpy);
 
       this.server.respondWith('{"hello": "world"}');
       this.server.respond();

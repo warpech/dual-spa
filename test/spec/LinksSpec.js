@@ -4,7 +4,7 @@ describe("Links", function () {
 
     var initSpy = jasmine.createSpy();
 
-    SPA('/', initSpy);
+    new SPA('/', initSpy);
 
     this.server.respondWith('{"hello": "world"}');
     this.server.respond();
