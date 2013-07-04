@@ -34,11 +34,10 @@
         this.pathname = window.location.pathname;
 
         var that = this;
-        SPA.init(window.location.href, function (obj) {
+        var spa = new SPA(window.location.href, function (obj) {
           that.viewmodel = obj;
+          spa.catchExternaLink(that.webkitShadowRoot);
         });
-
-        SPA.catchExternaLink(this.webkitShadowRoot);
       }
     });
   </script>

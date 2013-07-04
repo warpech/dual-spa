@@ -29,7 +29,7 @@
 </template>
 
 <script>
-  SPA.init(window.location.href, function (obj) {
+  var spa = new SPA(window.location.href, function (obj) {
     document.getElementById('mainTpl').model = obj;
   });
 </script>
