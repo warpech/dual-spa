@@ -1,0 +1,136 @@
+<!doctype html>
+<head>
+  <title>Minimalistic Page in Page tag</title>
+  <script src="js/polymer-all/polymer/polymer.js" debug></script>
+  <script src="js/mdv_extra.js"></script>
+
+  <style>
+    .bookTitle {
+      font-family: Georgia, serif;
+      font-size: 18px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+<p>You should see a book from the library and a button</p>
+
+<template id="test" bind>
+  <template repeat="{{ Pages }}">
+    <x-html content="{{ Html }}"></x-html>
+  </template>
+</template>
+
+<hr>
+
+What works:
+
+<ul>
+  <li>HTML templates using x-html</li>
+  <li>nested partials</li>
+  <li>observing model changes and replacing them in partial</li>
+  <li>observing partial changes and replacing the partial</li>
+</ul>
+
+Remaining problems:
+
+<ul>
+  <li>The book entry does not show {{ Library }} name (parent scope)</li>
+  <li>The button shows book {{ Title }} instead of button {{ Label }}</li>
+</ul>
+
+<element name="x-html">
+  <script>
+    function getModel(node) {
+      return node.model || node.instanceModel;
+    }
+
+    function getPreviousNode(node) {
+      if (node.previousElementSibling) {
+        return node.previousElementSibling;
+      }
+      else if (node.parentNode) {
+        return  node.parentNode;
+      }
+    }
+
+    function reattachTemplate(customElement) {
+      customElement.innerHTML = '<template bind>' + customElement.getAttribute('content') + '</template>';
+      var tpl = getPreviousNode(customElement);
+      while (tpl) {
+        if (getModel(tpl)) {
+          break;
+        }
+        tpl = getPreviousNode(tpl);
+      }
+      if (tpl && getModel(tpl)) {
+        //console.log("template model", tpl, getModel(tpl));
+        customElement.firstChild.model = getModel(tpl);
+      }
+      else {
+        //why it fails if I uncomment this?
+        //throw new Error('x-html could not find the template model');
+      }
+    }
+
+    // When <element> is in document, we might run in wrong context.
+    // Only do work when this == <element>.
+    if (this !== window) { //will be true if browser supports Custom Elements
+      this.register({
+        prototype: {
+          readyCallback: function () {
+            var customElement = this;
+            reattachTemplate(customElement);
+
+            var observer = new MutationObserver(function (mutations) {
+              mutations.forEach(function (mutation) {
+                if (mutation.type === "attributes" && mutation.attributeName === "content") {
+                  reattachTemplate(customElement);
+                }
+              });
+            });
+            observer.observe(this, {
+              attributes: true
+            });
+          }
+        }
+      });
+    }
+  </script>
+</element>
+
+<script>
+  var obj = {
+    Pages: [
+      {
+        Html: '<p>Library "{{ Library }}" has a book <x-html content="{{ Partial }}"></x-html></p>',
+        Partial: '{{ Author }}\'s "<strong>{{ Title }}</strong>"',
+        Author: 'Fyodor Dostoyevsky',
+        Title: 'Crime and Punishment'
+      },
+      {
+        Html: "<button>{{ Label }} / {{ Title }}</button>",
+        Label: "Nothing happens"
+      }
+    ],
+    Library: "Madrid City Library"
+  };
+
+  document.getElementById("test").model = obj;
+
+  setTimeout(function () {
+    obj.Pages[0].Partial = '<span class="bookTitle">{{ Title }}</span> by <strong>{{ Author }}</strong>';
+  }, 1000);
+
+  setTimeout(function () {
+    obj.Pages[0].Title = "The Brothers Karamazov";
+  }, 2000);
+
+  setTimeout(function () {
+    obj.Pages[0].Author = "Mikhail Bulgakov";
+    obj.Pages[0].Title = "The Master and Margarita";
+  }, 3000);
+</script>
+</body>
+
