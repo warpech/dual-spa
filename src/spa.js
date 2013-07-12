@@ -45,6 +45,9 @@
     this.unobserve();
     jsonpatch.apply(this.obj, patches);
     this.observe();
+    if (this.onRemoteChange) {
+      this.onRemoteChange();
+    }
   };
 
   SPA.prototype.isApplicationLink = function (href) {
