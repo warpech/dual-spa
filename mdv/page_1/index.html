@@ -5,7 +5,10 @@
   <title>MDV version of the Dual SPA POC</title>
 
   <base href="/dual-spa/mdv/">
-  <script src="js/mdv/mdv.js"></script>
+  <!--<script src="js/mdv/mdv.js"></script>-->
+  <!--<script src="js/polymer-all/polymer/polymer.js"></script>-->
+  <script src="js/polymer.min.js"></script>
+  <script src="js/mdv_extra.js"></script>
   <script src="../src/json-patch-duplex.js"></script>
   <script src="../src/spa.js"></script>
 
@@ -13,58 +16,109 @@
 
   <script src="../test/lib/sinon-1.7.1.js"></script>
   <script src="../src/mockServer.js"></script>
+
+  <style>
+    .bookTitle {
+      font-family: Georgia, serif;
+      font-size: 18px;
+      font-style: italic;
+    }
+  </style>
 </head>
 <body>
 
-<template id="pageTpl"></template>
-
 <ul>
-  <li><a href="page_1">Page 1</a></li>
-  <li><a href="page_2">Page 2</a></li>
+  <li><a href="./page_1">Page 1</a></li>
+  <li><a href="./page_2">Page 2</a></li>
 </ul>
 
-<div id="currentPage">
-  <template id="mainTpl" bind ref="pageTpl"></template>
-</div>
+<template id="test" bind>
+  <template bind="{{ subpage }}">
+    <x-html content="{{ html }}"></x-html>
+  </template>
+</template>
 
 <script>
-  var spa = new SPA(window.location.href, function (obj) {
-    document.getElementById('mainTpl').model = obj;
-
-    var lastHtml = obj.subpage.html;
-    loadView(lastHtml, obj);
-
-    Object.observe(obj.subpage, function () {
-      if (obj.subpage.html !== lastHtml) {
-        lastHtml = obj.subpage.html;
-        loadView(lastHtml, obj);
-      }
-    });
+  new SPA(window.location.href, function (obj) {
+    document.getElementById('test').model = obj;
+    console.log('obj', obj);
   });
-
-  function loadView(html, model) {
-    if (html && html.indexOf('@') === 0) {
-      //load partial from HTTP server/cache
-      var href = html.substr(1);
-      var oReq = new XMLHttpRequest();
-      oReq.onload = function (event) {
-        replaceView(event.target.responseText, model);
-      };
-      oReq.open("GET", href, true);
-      oReq.send();
-    }
-    else {
-      //load partial from string
-      replaceView(html, model);
-    }
-  }
-
-  function replaceView(html, model) {
-    var currentPage = document.getElementById('currentPage');
-    document.getElementById('pageTpl').innerHTML = html;
-    currentPage.innerHTML = '<template id="mainTpl" bind ref="pageTpl"></template>';
-    currentPage.firstChild.model = model;
-  }
 </script>
+<element name="x-html">
+  <script>
+    function getModel(node) {
+      return node.model || node.instanceModel;
+    }
+
+    function getPreviousNode(node) {
+      if (node.previousElementSibling) {
+        return node.previousElementSibling;
+      }
+      else if (node.parentNode) {
+        return  node.parentNode;
+      }
+    }
+
+    function loadTemplate(customElement) {
+      var template = customElement.getAttribute('content');
+      if (template && template.indexOf('@') === 0) {
+        //load partial from HTTP server/cache
+        var href = template.substr(1);
+        var oReq = new XMLHttpRequest();
+        oReq.onload = function (event) {
+          reattachTemplate(customElement, event.target.responseText);
+        };
+        oReq.open("GET", href, true);
+        oReq.send();
+      }
+      else {
+        //load partial from string
+        reattachTemplate(customElement, template);
+      }
+    }
+
+    function reattachTemplate(customElement, template) {
+      customElement.innerHTML = '<template bind>' + template + '</template>';
+      var tpl = getPreviousNode(customElement);
+      while (tpl) {
+        if (getModel(tpl)) {
+          break;
+        }
+        tpl = getPreviousNode(tpl);
+      }
+      if (tpl && getModel(tpl)) {
+        customElement.firstChild.model = getModel(tpl);
+      }
+      else {
+        //why it fails if I uncomment this?
+        //throw new Error('x-html could not find the template model');
+      }
+    }
+
+    // When <element> is in document, we might run in wrong context.
+    // Only do work when this == <element>.
+    if (this !== window) { //will be true if browser supports Custom Elements
+      this.register({
+        prototype: {
+          readyCallback: function () {
+            var customElement = this;
+            loadTemplate(customElement);
+
+            var observer = new MutationObserver(function (mutations) {
+              mutations.forEach(function (mutation) {
+                if (mutation.type === "attributes" && mutation.attributeName === "content") {
+                  loadTemplate(customElement);
+                }
+              });
+            });
+            observer.observe(this, {
+              attributes: true
+            });
+          }
+        }
+      });
+    }
+  </script>
+</element>
 </body>
 </html>
