@@ -41,22 +41,12 @@
 <script>
   new SPA(window.location.href, function (obj) {
     document.getElementById('test').model = obj;
-    console.log('obj', obj);
-  });
+    });
 </script>
 <element name="x-html">
   <script>
     function getModel(node) {
-      return node.model || node.instanceModel;
-    }
-
-    function getPreviousNode(node) {
-      if (node.previousElementSibling) {
-        return node.previousElementSibling;
-      }
-      else if (node.parentNode) {
-        return  node.parentNode;
-      }
+      return node.instanceModel;
     }
 
     function loadTemplate(customElement) {
@@ -79,20 +69,8 @@
 
     function reattachTemplate(customElement, template) {
       customElement.innerHTML = '<template bind>' + template + '</template>';
-      var tpl = getPreviousNode(customElement);
-      while (tpl) {
-        if (getModel(tpl)) {
-          break;
-        }
-        tpl = getPreviousNode(tpl);
-      }
-      if (tpl && getModel(tpl)) {
-        customElement.firstChild.model = getModel(tpl);
-      }
-      else {
-        //why it fails if I uncomment this?
-        //throw new Error('x-html could not find the template model');
-      }
+      var model = getModel(customElement);
+      customElement.firstChild.model = model;
     }
 
     // When <element> is in document, we might run in wrong context.

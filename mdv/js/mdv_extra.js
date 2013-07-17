@@ -1,6 +1,25 @@
 
 (function() {
 
+  var elementModels = new WeakMap();
+
+  var _eb = Element.prototype.bind;
+  Element.prototype.bind = function () {
+    var ret = _eb.apply(this, arguments);
+    this.instanceModel = arguments[1];
+    return ret;
+  };
+
+  Object.defineProperty(Element.prototype, "instanceModel", {
+    get: function () {
+      return elementModels.get(this);
+    },
+    set: function (model) {
+      elementModels.set(this, model);
+    }
+  });
+
+  /*
   // BEGIN Attach MDV TemplateIterator to Template (as we can't reach the side tables)
   var xx = Function.prototype.bind;
   Function.prototype.bind = function() {
@@ -35,5 +54,5 @@
     },
     enumerable : true,
     configurable : true });
-
+  */
 }());
