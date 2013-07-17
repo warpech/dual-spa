@@ -37,41 +37,37 @@ Remaining problems:
 
 <ul>
   <li>The book entry does not show {{ Library }} name (parent scope)</li>
-  <li>The button shows book {{ Title }} instead of button {{ Label }}</li>
+  <li style="text-decoration: line-through">The button shows book {{ Title }} instead of button {{ Label }}</li>
 </ul>
 
 <element name="x-html">
   <script>
     function getModel(node) {
-      return node.model || node.instanceModel;
+      return node.instanceModel;
     }
 
-    function getPreviousNode(node) {
-      if (node.previousElementSibling) {
-        return node.previousElementSibling;
-      }
-      else if (node.parentNode) {
-        return  node.parentNode;
-      }
-    }
-
-    function reattachTemplate(customElement) {
-      customElement.innerHTML = '<template bind>' + customElement.getAttribute('content') + '</template>';
-      var tpl = getPreviousNode(customElement);
-      while (tpl) {
-        if (getModel(tpl)) {
-          break;
-        }
-        tpl = getPreviousNode(tpl);
-      }
-      if (tpl && getModel(tpl)) {
-        //console.log("template model", tpl, getModel(tpl));
-        customElement.firstChild.model = getModel(tpl);
+    function loadTemplate(customElement) {
+      var template = customElement.getAttribute('content');
+      if (template && template.indexOf('@') === 0) {
+        //load partial from HTTP server/cache
+        var href = template.substr(1);
+        var oReq = new XMLHttpRequest();
+        oReq.onload = function (event) {
+          reattachTemplate(customElement, event.target.responseText);
+        };
+        oReq.open("GET", href, true);
+        oReq.send();
       }
       else {
-        //why it fails if I uncomment this?
-        //throw new Error('x-html could not find the template model');
+        //load partial from string
+        reattachTemplate(customElement, template);
       }
+    }
+
+    function reattachTemplate(customElement, template) {
+      customElement.innerHTML = '<template bind>' + template + '</template>';
+      var model = getModel(customElement);
+      customElement.firstChild.model = model;
     }
 
     // When <element> is in document, we might run in wrong context.
@@ -81,12 +77,12 @@ Remaining problems:
         prototype: {
           readyCallback: function () {
             var customElement = this;
-            reattachTemplate(customElement);
+            loadTemplate(customElement);
 
             var observer = new MutationObserver(function (mutations) {
               mutations.forEach(function (mutation) {
                 if (mutation.type === "attributes" && mutation.attributeName === "content") {
-                  reattachTemplate(customElement);
+                  loadTemplate(customElement);
                 }
               });
             });
