@@ -11,6 +11,8 @@
       font-style: italic;
     }
   </style>
+
+  <link rel="import" href="components/x-html.html">
 </head>
 <body>
 
@@ -39,62 +41,6 @@ Remaining problems:
   <li>The book entry does not show {{ Library }} name (parent scope)</li>
   <li style="text-decoration: line-through">The button shows book {{ Title }} instead of button {{ Label }}</li>
 </ul>
-
-<element name="x-html">
-  <script>
-    function getModel(node) {
-      return node.instanceModel;
-    }
-
-    function loadTemplate(customElement) {
-      var template = customElement.getAttribute('content');
-      if (template && template.indexOf('@') === 0) {
-        //load partial from HTTP server/cache
-        var href = template.substr(1);
-        var oReq = new XMLHttpRequest();
-        oReq.onload = function (event) {
-          reattachTemplate(customElement, event.target.responseText);
-        };
-        oReq.open("GET", href, true);
-        oReq.send();
-      }
-      else {
-        //load partial from string
-        reattachTemplate(customElement, template);
-      }
-    }
-
-    function reattachTemplate(customElement, template) {
-      customElement.innerHTML = '<template bind>' + template + '</template>';
-      var model = getModel(customElement);
-      customElement.firstChild.model = model;
-    }
-
-    // When <element> is in document, we might run in wrong context.
-    // Only do work when this == <element>.
-    if (this !== window) { //will be true if browser supports Custom Elements
-      this.register({
-        prototype: {
-          readyCallback: function () {
-            var customElement = this;
-            loadTemplate(customElement);
-
-            var observer = new MutationObserver(function (mutations) {
-              mutations.forEach(function (mutation) {
-                if (mutation.type === "attributes" && mutation.attributeName === "content") {
-                  loadTemplate(customElement);
-                }
-              });
-            });
-            observer.observe(this, {
-              attributes: true
-            });
-          }
-        }
-      });
-    }
-  </script>
-</element>
 
 <script>
   var obj = {

@@ -53,9 +53,15 @@ var server = sinon.fakeServer.create();
 server.autoRespond = true;
 server.autoRespondAfter = 100;
 
+Object.defineProperty(server.xhr.prototype, "response", {
+  get: function () {
+    return this.responseText; //'response' getter required to make SinonJS work with Polymer's HTMLImports.js
+  }
+});
+
 server.xhr.useFilters = true;
 server.xhr.addFilter(function (method, url) {
-  if (url.indexOf('partial') > -1) {
+  if (url.indexOf('partial') > -1 || url.indexOf('components') > -1) {  //'components' required to make SinonJS work with Polymer's HTMLImports.js
     return true;
   }
   return false;
@@ -92,9 +98,9 @@ server.respondWith(function (xhr) {
 
 /// simulate server push (here: query server every 2 s
 /*setInterval(function () {
-  var a = document.createElement('A');
-  a.href = window.location.href;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}, 2000);*/
+ var a = document.createElement('A');
+ a.href = window.location.href;
+ document.body.appendChild(a);
+ a.click();
+ document.body.removeChild(a);
+ }, 2000);*/
