@@ -1,0 +1,129 @@
+<!--
+Copyright 2013 Google Inc. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<!DOCTYPE html>
+<div id="anim"></div>
+
+<script src="../testharness_bootstrap.js"></script>
+<script src="../../web-animations.js"></script>
+<script>
+"use strict";
+
+var anim = new Animation(document.getElementById("anim"), {left: ["100px"]},
+    {iterationCount: 3.0});
+var parGroup = new ParGroup();
+var seqGroup = new SeqGroup();
+
+// Should use intrinsic duration if Timing.duration is undefined.
+// Animation
+test(function() {assert_equals(anim.duration,  0.0)},
+     "Animation duration should use intrinsic value");
+anim.timing.duration = 1.0;
+test(function() {assert_equals(anim.duration,  1.0)},
+     "Animation duration should use specified value");
+// ParGroup
+test(function() {assert_equals(parGroup.duration,  0.0)},
+     "ParGroup duration should use intrinsic value");
+parGroup.add(anim);
+test(function() {assert_equals(parGroup.duration,  3.0)},
+     "ParGroup duration should be derived from child");
+parGroup.timing.duration = 2.0;
+test(function() {assert_equals(parGroup.duration,  2.0)},
+     "ParGroup duration should use specified value");
+// SeqGroup
+test(function() {assert_equals(seqGroup.duration,  0.0)},
+     "SeqGroup duration should use intrinsic value");
+seqGroup.add(anim);
+test(function() {assert_equals(seqGroup.duration,  3.0)},
+     "SeqGroup duration should be derived from child");
+seqGroup.timing.duration = 4.0;
+test(function() {assert_equals(seqGroup.duration,  4.0)},
+     "SeqGroup duration should use specified value");
+
+// TimedItem.duration should override TimedItem.timing.duration until explicitly
+// set to undefined.
+// Animation
+anim.timing.duration = 5.0;
+test(function() {assert_equals(anim.duration,  5.0)},
+     "Animation failed to update duration");
+anim.duration = 6.0;
+test(function() {assert_equals(anim.duration,  6.0)},
+     "Animation failed to override Timing.duration");
+anim.timing.duration = 7.0;
+test(function() {assert_equals(anim.duration,  6.0)},
+     "Animation Timing.duration should be overriden with 7.0");
+anim.duration = null;
+test(function() {assert_equals(anim.duration,  null)},
+     "Animation Timing.duration should be overriden with null");
+anim.duration = undefined;
+test(function() {assert_equals(anim.duration,  7.0)},
+     "Animation Timing.duration should no longer be overriden");
+// ParGroup
+parGroup.add(anim);
+parGroup.timing.duration = 8.0;
+test(function() {assert_equals(parGroup.duration,  8.0)},
+     "ParGroup Failed to update duration");
+parGroup.duration = 9.0;
+test(function() {assert_equals(parGroup.duration,  9.0)},
+     "ParGroup Failed to override Timing.duration");
+parGroup.timing.duration = 10.0;
+test(function() {assert_equals(parGroup.duration,  9.0)},
+     "ParGroup Timing.duration should be overriden with 10.0");
+parGroup.duration = null;
+test(function() {assert_equals(parGroup.duration,  null)},
+     "ParGroup Timing.duration should be overriden with null");
+parGroup.duration = undefined;
+test(function() {assert_equals(parGroup.duration,  10.0)},
+     "ParGroup Timing.duration should no longer be overriden");
+// SeqGroup
+seqGroup.add(anim);
+seqGroup.timing.duration = 11.0;
+test(function() {assert_equals(seqGroup.duration,  11.0)},
+     "SeqGroup Failed to update duration");
+seqGroup.duration = 12.0;
+test(function() {assert_equals(seqGroup.duration,  12.0)},
+     "SeqGroup Failed to override Timing.duration");
+seqGroup.timing.duration = 13.0;
+test(function() {assert_equals(seqGroup.duration,  12.0)},
+     "SeqGroup Timing.duration should be overriden with 13.0");
+seqGroup.duration = null;
+test(function() {assert_equals(seqGroup.duration,  null)},
+     "SeqGroup Timing.duration should be overriden with null");
+seqGroup.duration = undefined;
+test(function() {assert_equals(seqGroup.duration,  13.0)},
+     "Timing.duration should no longer be overriden");
+
+// TimedItem.animationDuration should always reflect TimedItem.duration.
+anim.timing.duration = 14.0;
+test(function() {assert_equals(anim.animationDuration,  42.0)},
+     "animationDuration incorrect");
+anim.duration = 15.0;
+test(function() {assert_equals(anim.animationDuration,  45.0)},
+     "animationDuration should use overridden duration");
+
+// TimedItem.animationDuration should override value calculated from duration
+// and iterationCount, until explicitly set to undefined.
+anim.animationDuration = 16.0;
+test(function() {assert_equals(anim.animationDuration,  16.0)},
+     "animationDuration should override calculated value, 16.0");
+anim.animationDuration = null;
+test(function() {assert_equals(anim.animationDuration,  null)},
+     "animationDuration should override calculated value, null");
+anim.animationDuration = undefined;
+test(function() {assert_equals(anim.animationDuration,  45.0)},
+     "animationDuration should use calculated value");
+
+</script>

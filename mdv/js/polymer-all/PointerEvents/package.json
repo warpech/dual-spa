@@ -1,0 +1,33 @@
+{
+  "name": "PointerEvents",
+  "version": "0.0.0",
+  "description": "Polyfill of the PointerEvents w3c spec",
+  "main": "Gruntfile.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "*",
+    "chai-spies": "*",
+    "grunt": "*",
+    "grunt-contrib-uglify": "*",
+    "grunt-contrib-yuidoc": "*",
+    "karma-mocha": "*",
+    "karma-script-launcher": "*",
+    "karma-crbot-reporter": "*",
+    "grunt-karma-0.9.1": "~0.4.3"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Polymer/PointerEvents.git"
+  },
+  "author": "Polymer Authors",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "fc4d102296f7c8c5ed23d2dc8988920e685d050f"
+}
