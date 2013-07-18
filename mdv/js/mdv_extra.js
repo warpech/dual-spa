@@ -6,11 +6,11 @@
   var _eb = Element.prototype.bind;
   Element.prototype.bind = function () {
     var ret = _eb.apply(this, arguments);
-    this.instanceModel = arguments[1];
+    this.model = arguments[1]; //if template can use such property name, I think that any other Custom Element can too
     return ret;
   };
 
-  Object.defineProperty(Element.prototype, "instanceModel", {
+  Object.defineProperty(Element.prototype, "model", {
     get: function () {
       return elementModels.get(this);
     },

@@ -1,6 +1,7 @@
 var full = {
   username: "Marcin",
   subpage: {
+    genderList: ['Male', 'Female'],
     people: [
       {id: 1, name: {first: 'Joe', last: 'Fabiano'}, gender: 'Male', age: 21, languages: {english: 'Yes', spanish: 'Yes', french: 'No'}, salary: 2000},
       {id: 2, name: {first: 'Fred', last: 'Wecler'}, gender: 'Male', age: 25, languages: {english: 'Yes', spanish: 'No', french: 'No'}, salary: 2500},

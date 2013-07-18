@@ -6,11 +6,11 @@
 
 <p>All data on this page is updated using JSON Patch against the data model.</p>
 
+<div id="hot"></div>
+
 <script>
-  console.log('this does not show up in Chrome Console');
   $('#hot').handsontable({
-    data: settings,
-    colWidths: [30, 70, 100],
+    data: this.model.people,
     colHeaders: ['ID', 'First Name', 'Last Name', 'Gender', 'Age', 'English', 'Spanish', 'French', 'Salary'],
     columns: [
       {
@@ -24,9 +24,9 @@
         data: 'name.last'
       },
       {
-        readOnly: true,
+        type: 'autocomplete',
         data: 'gender',
-        source: genderList
+        source: this.model.genderList
       },
       {
         type: 'numeric',
@@ -34,15 +34,21 @@
       },
       {
         type: 'checkbox',
-        data: 'languages.english'
+        data: 'languages.english',
+        checkedTemplate: 'Yes',
+        uncheckedTemplate: 'No'
       },
       {
         type: 'checkbox',
-        data: 'languages.spanish'
+        data: 'languages.spanish',
+        checkedTemplate: 'Yes',
+        uncheckedTemplate: 'No'
       },
       {
         type: 'checkbox',
-        data: 'languages.french'
+        data: 'languages.french',
+        checkedTemplate: 'Yes',
+        uncheckedTemplate: 'No'
       },
       {
         type: 'numeric',
