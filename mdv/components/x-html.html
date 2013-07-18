@@ -26,7 +26,52 @@
       customElement.innerHTML = '<template bind>' + template + '</template>';
       var model = getModel(customElement);
       customElement.firstChild.model = model;
+
+      setTimeout(function () {
+        var inScripts = customElement.firstChild.content.querySelectorAll('script');
+        inScripts.forEach(function(inScript) {
+          executeComponentScript(inScript.textContent, customElement, 'script')
+        });
+      }, 0);
     }
+
+    /**
+     * Function that executes script (that is ignored by browser's .innerHTML)
+     * @source Polymer's HTMLElementElement.js
+     */
+    function executeComponentScript(inScript, inContext, inName) {
+      // set (highlander) context
+      context = inContext;
+      // source location
+      var owner = context.ownerDocument;
+      var url = (owner._URL || owner.URL || owner.impl
+        && (owner.impl._URL || owner.impl.URL));
+      // ensure the component has a unique source map so it can be debugged
+      // if the name matches the filename part of the owning document's url,
+      // use this, otherwise, add ":<name>" to the document url.
+      var match = url.match(/.*\/([^.]*)[.]?.*$/);
+      if (match) {
+        var name = match[1];
+        url += name != inName ? ':' + inName : '';
+      }
+      // compose script
+      var code = "__componentScript('"
+          + inName
+          + "', function(){"
+          + inScript
+          + "});"
+          + "\n//# sourceURL=" + url + "\n"
+        ;
+      // inject script
+      eval(code);
+    }
+
+    var context;
+
+    // global necessary for script injection
+    window.__componentScript = function (inName, inFunc) {
+      inFunc.call(context);
+    };
 
     // When <element> is in document, we might run in wrong context.
     // Only do work when this == <element>.
